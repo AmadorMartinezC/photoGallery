@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
+class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
 
     final private List<Image> localDataSet;
 

@@ -1,27 +1,39 @@
 package com.app.imagegalery;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
+import android.os.Environment;
+import android.provider.MediaStore;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
 
+    private static final int REQUEST_IMAGE_CAMERA = 101;
     private static final int REQUEST_PERMISSION_CAMERA = 100;
+
+    private static String currentPhotoPath;
+    private File photoFile;
+    private static List<Image> imageItems;
+
     private RecyclerView recyclerView;
-    RecyclerView.LayoutManager layoutManager;
-    RecycleViewAdapter recycleViewAdapter;
-
-
-    int[] images = {R.drawable.sity, R.drawable.ricky_morty, R.drawable.ricardoymartin, R.drawable.lionel, R.drawable.kdb, R.drawable.barca};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,34 +43,52 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", MODE_PRIVATE);
         boolean firstStart = sharedPreferences.getBoolean("firstStart", true);
-        if (firstStart)
+        if (firstStart){
             InternalAccesData.copyAssetsIntoInternalStorage(this);
+        }
 
-        // Set up camera button
         FloatingActionButton photoBtn = findViewById(R.id.photoBtn);
-        photoBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
-                    openCamera();
-                else
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
-            }
+        photoBtn.setOnClickListener(v -> {
+            if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED)
+                cameraOpener();
+            else
+                ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
         });
 
-
-
-
         recyclerView = findViewById(R.id.recyclerView);
-        layoutManager = new GridLayoutManager(this, 1);
-        recyclerView.setLayoutManager(layoutManager);
-        recycleViewAdapter = new RecycleViewAdapter(images);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        recyclerView.setAdapter(recycleViewAdapter);
-
-
+        imageItems = InternalAccesData.getImagesFromStorage(this);
+        ImageAdapter imageAdapter = new ImageAdapter(imageItems);
+        recyclerView.setAdapter(imageAdapter);
 
         recyclerView.setHasFixedSize(true);
+    }
+
+    private void cameraOpener() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+            photoFile = createFile();
+            if (photoFile != null) {
+                Uri photoUri = FileProvider.getUriForFile(this, "com.app.imagegalery", photoFile);
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                startActivityForResult(cameraIntent, REQUEST_IMAGE_CAMERA);
+            }
+        }
+    }
+
+    private File createFile() {
+        String timeStamp = new SimpleDateFormat("ddMMyyyy_HH-mm-ss", Locale.getDefault()).format(new Date());
+        String imgFileName = "IMG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        try {
+            File image = File.createTempFile(imgFileName, ".jpg", storageDir);
+            currentPhotoPath = image.getAbsolutePath();
+            return image;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
