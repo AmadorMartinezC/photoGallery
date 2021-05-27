@@ -1,10 +1,10 @@
 package com.app.imagegalery;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,17 +23,18 @@ class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
         private String name;
         private final ImageView iView;
         private final TextView tView;
+        private final EditText eText;
         private final Button editTextBtn;
 
         public ViewHolder(View view) {
             super(view);
             iView = view.findViewById(R.id.iView);
             tView = view.findViewById(R.id.tView);
+            eText = view.findViewById(R.id.editText);
             editTextBtn = view.findViewById(R.id.editBtn);
             editTextBtn.setOnClickListener(v -> {
-                Log.v("TVIEW", tView.getText().toString());
-                if (!tView.getText().toString().equals("")){
-                    String comment = tView.getText().toString();
+                if (!eText.getText().toString().equals("")){
+                    String comment = eText.getText().toString();
                     tView.setText(comment);
                     InternalAccessData.saveComment(v.getContext(), name, comment);
                 } else {
