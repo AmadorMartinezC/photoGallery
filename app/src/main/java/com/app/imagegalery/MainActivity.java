@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static String currentPhotoPath;
     private File photoFile;
-    private static List<Image> imageItems;
+    private static List<Image> imageItems = null;
 
     private RecyclerView recyclerView;
 
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("sharedPreferences", MODE_PRIVATE);
         boolean firstStart = sharedPreferences.getBoolean("firstStart", true);
         if (firstStart){
-            InternalAccesData.copyAssetsIntoInternalStorage(this);
+            InternalAccessData.copyAssetsIntoInternalStorage(this);
         }
 
         FloatingActionButton photoBtn = findViewById(R.id.photoBtn);
@@ -58,7 +59,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        imageItems = InternalAccesData.getImagesFromStorage(this);
+        imageItems = InternalAccessData.getImagesFromStorage(this.getBaseContext());
+        Log.d("INTERNAL", InternalAccessData.getImagesFromStorage(this.getApplicationContext())+" ");
+        Log.d("TAMAÑO", imageItems.size()+" ");
         ImageAdapter imageAdapter = new ImageAdapter(imageItems);
         recyclerView.setAdapter(imageAdapter);
 

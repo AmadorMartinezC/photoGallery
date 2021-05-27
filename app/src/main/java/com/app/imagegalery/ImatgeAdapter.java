@@ -1,9 +1,10 @@
 package com.app.imagegalery;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +23,7 @@ class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
         private String name;
         private final ImageView iView;
         private final TextView tView;
-        private final ImageButton editTextBtn;
+        private final Button editTextBtn;
 
         public ViewHolder(View view) {
             super(view);
@@ -30,11 +31,11 @@ class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
             tView = view.findViewById(R.id.tView);
             editTextBtn = view.findViewById(R.id.editBtn);
             editTextBtn.setOnClickListener(v -> {
-
+                Log.v("TVIEW", tView.getText().toString());
                 if (!tView.getText().toString().equals("")){
                     String comment = tView.getText().toString();
                     tView.setText(comment);
-                    InternalAccesData.saveComment(v.getContext(), name, comment);
+                    InternalAccessData.saveComment(v.getContext(), name, comment);
                 } else {
                     Toast.makeText(v.getContext(), "No hay texto para añadir", Toast.LENGTH_SHORT).show();
                 }
@@ -57,7 +58,7 @@ class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
             return tView;
         }
 
-        public ImageButton getEditCommentButton() {
+        public Button getEditCommentButton() {
             return editTextBtn;
         }
 
@@ -69,11 +70,10 @@ class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-
-        View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.single_view, viewGroup, false);
-        ViewHolder myViewHolder = new ViewHolder(viewGroup);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.single_view, parent, false);
+        ViewHolder myViewHolder = new ViewHolder(view);
         return myViewHolder;
     }
 

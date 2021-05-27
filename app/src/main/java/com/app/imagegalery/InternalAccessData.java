@@ -6,6 +6,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.util.Log;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,7 +39,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-public class InternalAccesData {
+public class InternalAccessData {
 
     public static List<Image> getImagesFromStorage(Context context) {
         List<Image> imagesList = new ArrayList<Image>();
@@ -49,6 +50,7 @@ public class InternalAccesData {
         String imagesDirectory;
         Bitmap bitmap;
         try {
+            Log.d("CONTEXT", context.getFilesDir().toString());
             imagesDirectory = context.getFilesDir() + File.separator + "images";
             File[] listImages = new File(imagesDirectory).listFiles();
             for (File files : listImages) {
@@ -80,7 +82,7 @@ public class InternalAccesData {
         AssetManager am = context.getAssets();
         String[] filesArray = null;
         try {
-            filesArray = am.list("exampleImages");
+            filesArray = am.list("example-files");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -88,7 +90,7 @@ public class InternalAccesData {
             InputStream inputStream;
             OutputStream outputStream;
             try {
-                inputStream = am.open("exampleImages" + File.separator + name);
+                inputStream = am.open("example-files" + File.separator + name);
                 File outFile = new File(context.getFilesDir(), "images" + File.separator + name);
                 File imagesDir = new File(context.getFilesDir(), "images");
                 if (!imagesDir.exists())
