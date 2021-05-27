@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         ImageAdapter imageAdapter = new ImageAdapter(imageItems);
         recyclerView.setAdapter(imageAdapter);
 
-        recyclerView.setHasFixedSize(true);
     }
 
     private void cameraOpener() {
@@ -77,7 +76,9 @@ public class MainActivity extends AppCompatActivity {
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
                 startActivityForResult(cameraIntent, REQUEST_IMAGE_CAMERA);
             }
+            startActivity(getIntent());
         }
+
     }
 
     private File createFile() {

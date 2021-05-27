@@ -35,6 +35,7 @@ class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
             editTextBtn.setOnClickListener(v -> {
                 if (!eText.getText().toString().equals("")){
                     String comment = eText.getText().toString();
+                    eText.setText("");
                     tView.setText(comment);
                     InternalAccessData.saveComment(v.getContext(), name, comment);
                 } else {
